@@ -1,0 +1,80 @@
+/* App-specific styles augment Tailwind for a more polished, dashing look */
+/* .ring-gradient block moved outside and fixed indentation */
+.ring-gradient {
+  background: radial-gradient(1200px 600px at 100% -10%, rgba(56, 189, 248, 0.15), transparent 60%),
+              radial-gradient(800px 400px at -10% 100%, rgba(217, 70, 239, 0.12), transparent 60%);
+}
+html {
+  scroll-behavior: smooth;
+}
+
+/* Component styles (formerly in @layer components) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(to right, #38bdf8, #0ea5e9);
+  box-shadow: 0 4px 16px rgba(56,189,248,0.25);
+  transition: all 0.2s;
+}
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  color: #0ea5e9;
+  background: #fff;
+  border: 1px solid #bae6fd;
+  box-shadow: 0 1px 4px rgba(56,189,248,0.10);
+  transition: all 0.2s;
+}
+/* .input:focus block is already defined above. Removed duplicate and stray closing brace. */
+/* Removed stray, unclosed .ring-gradient block. */
+.glass {
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.2);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.card-hover {
+  transition: transform 0.3s;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(56,189,248,0.15);
+}
+ .input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #111827;
+  font-size: 1rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+/* .input:focus block is already defined above. Removed duplicate and stray closing brace. */
+/* Removed stray, unclosed .ring-gradient block. */
+
+/* Autofill fixes for visibility */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: #0f172a; /* slate-900 */
+  transition: background-color 9999s ease-in-out 0s;
+  box-shadow: 0 0 0px 1000px #ffffff inset;
+}
+:root.dark input:-webkit-autofill,
+:root.dark input:-webkit-autofill:hover,
+:root.dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc; /* slate-50 */
+  box-shadow: 0 0 0px 1000px #374151 inset; /* gray-700 */
+}
