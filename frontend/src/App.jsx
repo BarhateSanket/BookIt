@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { BrowserRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom';
 import './App.css';
 import { experiences } from './data/experiences';
@@ -131,7 +129,6 @@ function App() {
   };
 
   return (
-    <PayPalScriptProvider options={{ "client-id": "test" }}> 
     <Router future={{ v7_relativeSplatPath: true }}>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 ring-gradient">
         {/* Navigation */}
@@ -298,7 +295,6 @@ function App() {
         </footer>
       </div>
     </Router>
-    </PayPalScriptProvider>
   );
 }
 

@@ -5,8 +5,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { trackEvent } from '../utils/analytics';
 
-
 export default function Checkout() {
+  return (
+    <PayPalScriptProvider options={{ "client-id": "AXKM4EgWIgDZG9hBHs86xOYdmExWjp7GwE20T2y0yjnuJWFwrXb9mZiLnDQTUdOg3ao2NCdJF7GiYuf1" }}>
+      <CheckoutContent />
+    </PayPalScriptProvider>
+  );
+}
+
+function CheckoutContent() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
