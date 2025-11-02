@@ -1,5 +1,7 @@
 # BookIt — Experiences & Slots
 
+https://github.com/BarhateSanket/BookIt/assets/images
+
 [![Frontend](https://img.shields.io/badge/Frontend-React%2BTS-blue)](https://github.com/BarhateSanket/BookIt) [![Backend](https://img.shields.io/badge/Backend-Node.js%2BExpress-brightgreen)](https://github.com/BarhateSanket/BookIt) [![Database](https://img.shields.io/badge/Database-MongoDB-green)]()
 
 A full-stack travel experience booking web application where users can browse curated activities, check available date/time slots, apply promo codes and complete bookings.  
