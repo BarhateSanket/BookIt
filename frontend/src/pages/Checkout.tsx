@@ -74,154 +74,152 @@ export default function Checkout() {
   const total = Math.max(0, subtotal - discount);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-6 text-center">
-        <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">Checkout</h2>
-        <p className="text-gray-600 dark:text-gray-300">{title}</p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-2xl mx-auto">
+          <div className="glass rounded-xl p-8">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+              Checkout
+            </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-5">
-          <div className="glass rounded-2xl p-6 shadow-elevated">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Details</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="name" className="block text-sm mb-1 text-gray-700 dark:text-gray-300">Name</label>
-                <input 
-                  id="name"
-                  name="name"
-                  type="text"
-                  value={name} 
-                  onChange={e => setName(e.target.value)} 
-                  onBlur={() => setTouched(prev => ({...prev, name: true}))}
-                  className="input"
-                  required
-                  aria-required="true"
-                />
-                {touched.name && !name && (<p className="mt-1 text-xs text-red-500">Name is required</p>)}
+            <div className="space-y-6">
+              {/* Experience Details */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  {title}
+                </h2>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Date: {chosenSlot?.date} | Time: {chosenSlot?.time}
+                </p>
+                <p className="text-lg font-bold text-primary-600 mt-2">
+                  ₹{price} per person
+                </p>
               </div>
-              <div>
-                <label htmlFor="email" className="block text-sm mb-1 text-gray-700 dark:text-gray-300">Email</label>
-                <input 
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={email} 
-                  onChange={e => setEmail(e.target.value)} 
-                  onBlur={() => setTouched(prev => ({...prev, email: true}))}
-                  className="input"
-                  required
-                  aria-required="true"
-                />
-                {touched.email && !isValidEmail(email) && (<p className="mt-1 text-xs text-red-500">Enter a valid email</p>)}
-              </div>
-            </div>
-          </div>
 
-          <div className="glass rounded-2xl p-6 shadow-elevated">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Booking Preferences</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label htmlFor="quantity" className="block text-sm mb-1 text-gray-700 dark:text-gray-300">Quantity</label>
-                <input 
-                  id="quantity"
-                  name="quantity"
-                  type="number"
-                  min={1}
-                  value={quantity} 
-                  onChange={e => setQuantity(Number(e.target.value))} 
-                  className="input w-full sm:w-32"
-                  required
-                  aria-required="true"
-                />
-                {quantity < 1 && (<p className="mt-1 text-xs text-red-500">Minimum 1</p>)}
-              </div>
-              {!slot && (
-                <>
+              {/* Form */}
+              <form className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="date" className="block text-sm mb-1 text-gray-700 dark:text-gray-300">Preferred Date</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Full Name *
+                    </label>
                     <input
-                      id="date"
-                      name="date"
-                      type="date"
-                      value={date}
-                      onChange={e => setDate(e.target.value)}
-                      onBlur={() => setTouched(prev => ({...prev, date: true}))}
-                      className="input"
-                      required
-                      aria-required="true"
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="Enter your full name"
                     />
-                    {touched.date && !date && (<p className="mt-1 text-xs text-red-500">Select a date</p>)}
                   </div>
-                  <div>
-                    <label htmlFor="time" className="block text-sm mb-1 text-gray-700 dark:text-gray-300">Preferred Time</label>
-                    <input
-                      id="time"
-                      name="time"
-                      type="time"
-                      value={time}
-                      onChange={e => setTime(e.target.value)}
-                      onBlur={() => setTouched(prev => ({...prev, time: true}))}
-                      className="input"
-                      required
-                      aria-required="true"
-                    />
-                    {touched.time && !time && (<p className="mt-1 text-xs text-red-500">Select a time</p>)}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
 
-          <div className="glass rounded-2xl p-6 shadow-elevated">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Promo Code</h3>
-            <div className="flex items-center gap-3">
-              <label htmlFor="promo" className="sr-only">Promo Code</label>
-              <input 
-                id="promo"
-                name="promo"
-                type="text"
-                placeholder="Enter promo code"
-                value={promo} 
-                onChange={e => setPromo(e.target.value)} 
-                className="input"
-                aria-label="Promo code"
-              />
-              <button onClick={applyPromoCode} className="btn-secondary">Apply</button>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Email *
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Quantity *
+                    </label>
+                    <input
+                      id="quantity"
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="promo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Promo Code
+                    </label>
+                    <div className="flex space-x-2">
+                      <input
+                        id="promo"
+                        type="text"
+                        value={promo}
+                        onChange={(e) => setPromo(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder="Enter promo code"
+                      />
+                      <button
+                        type="button"
+                        onClick={applyPromoCode}
+                        className="btn-secondary"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {appliedPromo && (
+                  <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-md p-3">
+                    <p className="text-green-800 dark:text-green-200 text-sm">
+                      Promo code applied: {appliedPromo.code} ({appliedPromo.type === 'percentage' ? `${appliedPromo.value}% off` : `₹${appliedPromo.value} off`})
+                    </p>
+                  </div>
+                )}
+
+                {error && (
+                  <div className="bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-md p-3">
+                    <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
+                  </div>
+                )}
+              </form>
+
+              {/* Order Summary */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Order Summary
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-300">
+                      {title} x {quantity}
+                    </span>
+                    <span className="text-gray-900 dark:text-white">₹{subtotal}</span>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Discount</span>
+                      <span>-₹{discount}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-gray-300 dark:border-gray-600 pt-2">
+                    <div className="flex justify-between text-lg font-bold">
+                      <span className="text-gray-900 dark:text-white">Total</span>
+                      <span className="text-primary-600">₹{total}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Checkout Button */}
+              <button
+                onClick={placeBooking}
+                disabled={formInvalid || loading}
+                className="w-full btn text-lg py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Processing...' : `Proceed to Payment - ₹${total}`}
+              </button>
             </div>
-            {appliedPromo && <div className="mt-2 text-green-700 dark:text-green-400 text-sm">Applied: {appliedPromo.code}</div>}
-            {error && <div className="mt-2 text-red-600 text-sm">{error}</div>}
           </div>
         </div>
-
-        <aside className="lg:col-span-1">
-          <div className="glass rounded-2xl p-6 shadow-elevated sticky top-24">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Summary</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Experience</span><span>{title}</span></div>
-              <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Quantity</span><span>{quantity}</span></div>
-              {slot && (
-                <>
-                  <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Date</span><span>{slot.date}</span></div>
-                  <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Time</span><span>{slot.time}</span></div>
-                </>
-              )}
-              {!slot && (
-                <>
-                  <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Date</span><span>{date}</span></div>
-                  <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Time</span><span>{time}</span></div>
-                </>
-              )}
-              <div className="h-px my-2 bg-gray-200 dark:bg-gray-700"></div>
-              <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Subtotal</span><span>₹{subtotal}</span></div>
-              <div className="flex justify-between text-gray-700 dark:text-gray-300"><span>Discount</span><span>-₹{Math.round(discount)}</span></div>
-              <div className="flex justify-between font-semibold text-gray-900 dark:text-white"><span>Total</span><span>₹{Math.round(total)}</span></div>
-            </div>
-            <button disabled={loading || formInvalid} onClick={placeBooking} className="btn w-full mt-5 disabled:opacity-60">
-              {loading ? 'Processing...' : 'Pay & Book'}
-            </button>
-          </div>
-        </aside>
       </div>
     </div>
   );

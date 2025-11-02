@@ -4,12 +4,19 @@ const Booking = require('../models/Booking');
 const Experience = require('../models/Experience');
 const mongoose = require('mongoose');
 
-// GET /api/bookings?email=someone@example.com
+// GET /api/bookings - Get bookings for authenticated user
 router.get('/', async (req, res) => {
   try {
-    const { email } = req.query;
-    const query = email ? { userEmail: email } : {};
-    const bookings = await Booking.find(query).populate('experience').sort({ createdAt: -1 });
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ success: false, message: 'No token provided' });
+    }
+
+const decoded = require('jsonwebtoken').verify(token, process.env.JWT_SECRET || 'your-jwt-secret-key-here-change-in-production');
+    const bookings = await Booking.find({ user: decoded.id })
+      .populate('experience')
+      .sort({ createdAt: -1 });
+
     res.json({ success: true, bookings });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to fetch bookings' });
@@ -48,8 +55,11 @@ router.post('/', async (req, res) => {
     }
 
     const totalPrice = experience.price * quantity;
+    const decoded = require('jsonwebtoken').verify(req.headers.authorization?.split(' ')[1], process.env.JWT_SECRET || 'your-jwt-secret-key-here-change-in-production');
+
     const created = await Booking.create([{
       experience: experienceId,
+      user: decoded.id,
       slotDate, slotTime, userName, userEmail, quantity, totalPrice
     }], { session });
 

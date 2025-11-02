@@ -50,6 +50,7 @@ export default function Login() {
           value={password}
           onChange={e => setPassword(e.target.value)}
           className="input"
+          autoComplete="current-password"
           required
         />
         {error && <div className="text-red-500 text-sm">{error}</div>}

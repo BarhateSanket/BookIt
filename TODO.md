@@ -1,8 +1,13 @@
-# TODO: Run BookIt Project
+# TODO: Add Navigation and Functionality to Buttons
 
-- [x] Install backend dependencies (npm install in backend/)
-- [x] Install frontend dependencies (npm install in frontend/)
-- [x] Start backend dev server (npm run dev in backend/) - DB connection failed, needs MongoDB Atlas IP whitelist
-- [x] Start frontend dev server (npm run dev in frontend/) - Running on http://localhost:5173
-- [ ] Fix backend DB connection (add IP to MongoDB Atlas whitelist)
-- [ ] Verify backend server running on port 5000 after DB fix
+## Tasks
+- [x] Add missing routes in App.jsx for About, Privacy, Terms, Sitemap, Dashboard pages
+- [x] Update footer links to use React Router Link components instead of anchor tags
+- [x] Test navigation functionality
+
+## Additional Tasks
+- [ ] Add functionality to remaining footer links in Home.tsx (How It Works, Become a Host, Careers, Press, Help Center, Contact Us, etc.)
+- [ ] Add functionality to remaining footer links in Sitemap.tsx
+- [ ] Add functionality to social media links in App.tsx
+- [ ] Create missing pages for additional links (Contact, Help Center, etc.)
+- [ ] Add scroll-to-section functionality for internal navigation

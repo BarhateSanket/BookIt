@@ -13,6 +13,11 @@ const ExperienceSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   images: [String],
   location: String,
+  category: String,
+  rating: { type: Number, min: 0, max: 5, default: 0 },
+  duration: String, // e.g., "2 hours", "Half day", "Full day"
+  latitude: Number,
+  longitude: Number,
   slots: [SlotSchema]
 });
 

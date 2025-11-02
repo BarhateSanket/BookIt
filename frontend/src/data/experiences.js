@@ -23,17 +23,7 @@ export const experiences = [
     rating: 4.8,
     spots: 6
   },
-  {
-    id: 3,
-    title: 'Professional Photography Workshop',
-    description: 'Learn advanced photography techniques, composition, and post-processing from award-winning photographers.',
-    image: IMAGES.photography,
-    price: 199,
-    duration: '2 days',
-    category: 'Arts',
-    rating: 4.7,
-    spots: 10
-  },
+
   {
     id: 4,
     title: 'Mindful Yoga Retreat',
@@ -144,17 +134,7 @@ export const experiences = [
     rating: 4.6,
     spots: 10
   },
-  {
-    id: 14,
-    title: 'Mindfulness and Meditation Workshop',
-    description: 'Guided breathwork, mindfulness techniques, and a calming group meditation.',
-    image: IMAGES.meditation,
-    price: 65,
-    duration: '90 min',
-    category: 'Wellness',
-    rating: 4.8,
-    spots: 15
-  },
+
   {
     id: 15,
     title: 'Intro to Web Development',
@@ -175,6 +155,127 @@ export const experiences = [
     duration: '5 hours',
     category: 'Tech',
     rating: 4.8,
+    spots: 8
+  },
+  {
+    id: 17,
+    title: 'Sushi Making Masterclass',
+    description: 'Learn the art of sushi preparation from a master chef. Includes fresh fish handling and presentation.',
+    image: IMAGES.cooking,
+    price: 160,
+    duration: '3 hours',
+    category: 'Culinary',
+    rating: 4.9,
+    spots: 8
+  },
+  {
+    id: 18,
+    title: 'Scuba Diving Introduction',
+    description: 'Discover underwater worlds with certified instructors. Perfect for beginners with basic swimming skills.',
+    image: IMAGES.kayaking,
+    price: 220,
+    duration: '1 day',
+    category: 'Adventure',
+    rating: 4.7,
+    spots: 6
+  },
+  {
+    id: 19,
+    title: 'Digital Art Workshop',
+    description: 'Create stunning digital artwork using professional software and tablets. No prior experience needed.',
+    image: IMAGES.painting,
+    price: 120,
+    duration: '4 hours',
+    category: 'Arts',
+    rating: 4.6,
+    spots: 10
+  },
+  {
+    id: 20,
+    title: 'Forest Foraging Tour',
+    description: 'Learn to identify and safely harvest edible plants and mushrooms with expert naturalists.',
+    image: IMAGES.hiking,
+    price: 85,
+    duration: '3 hours',
+    category: 'Nature',
+    rating: 4.8,
+    spots: 12
+  },
+  {
+    id: 21,
+    title: 'Mixology Cocktail Class',
+    description: 'Master the craft of cocktail creation with premium spirits and fresh ingredients.',
+    image: IMAGES.wine,
+    price: 135,
+    duration: '2.5 hours',
+    category: 'Culinary',
+    rating: 4.9,
+    spots: 10
+  },
+  {
+    id: 22,
+    title: 'Rock Climbing Basics',
+    description: 'Scale indoor walls and learn fundamental climbing techniques with professional guides.',
+    image: IMAGES.hiking,
+    price: 95,
+    duration: '2 hours',
+    category: 'Adventure',
+    rating: 4.7,
+    spots: 8
+  },
+  {
+    id: 23,
+    title: 'Glass Blowing Workshop',
+    description: 'Shape molten glass into beautiful objects under the guidance of master glassblowers.',
+    image: IMAGES.pottery,
+    price: 175,
+    duration: '3 hours',
+    category: 'Arts',
+    rating: 4.8,
+    spots: 6
+  },
+  {
+    id: 24,
+    title: 'Aerial Yoga Session',
+    description: 'Experience the benefits of yoga with the support of silk hammocks. Great for all fitness levels.',
+    image: IMAGES.yoga,
+    price: 110,
+    duration: '1.5 hours',
+    category: 'Wellness',
+    rating: 4.9,
+    spots: 8
+  },
+  {
+    id: 25,
+    title: 'Urban Gardening Workshop',
+    description: 'Learn sustainable gardening techniques for small spaces and balconies.',
+    image: IMAGES.painting,
+    price: 70,
+    duration: '2 hours',
+    category: 'Nature',
+    rating: 4.5,
+    spots: 15
+  },
+  {
+    id: 26,
+    title: 'Drone Photography Course',
+    description: 'Master aerial photography with professional drones and editing software.',
+    image: IMAGES.citytour,
+    price: 250,
+    duration: '1 day',
+    category: 'Tech',
+    rating: 4.8,
+    spots: 5
+  },
+  {
+    id: 27,
+    title: 'Cheese Making Workshop',
+    description: 'Create artisanal cheeses from scratch using traditional methods and local ingredients.',
+    image: IMAGES.baking,
+    price: 145,
+    duration: '4 hours',
+    category: 'Culinary',
+    rating: 4.7,
     spots: 8
   }
 ];

@@ -8,11 +8,12 @@ const bookingsRoutes = require('./routes/bookings');
 const promoRoutes = require('./routes/promo');
 const authRoutes = require('./routes/auth');
 const paymentsRoutes = require('./routes/payments');
+const savedSearchesRoutes = require('./routes/savedSearches');
 
 const app = express();
 // Configure CORS
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://localhost:5176'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -23,6 +24,9 @@ app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), req
 
 // Parse JSON bodies for everything else
 app.use(express.json());
+
+// Serve uploaded files
+app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 
 // Add security headers
 app.use((req, res, next) => {
@@ -53,6 +57,7 @@ app.use('/api/bookings', bookingsRoutes);
 app.use('/api/promo', promoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/payments', paymentsRoutes);
+app.use('/api/saved-searches', savedSearchesRoutes);
 
 const PORT = process.env.PORT || 5000;
 

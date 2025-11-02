@@ -25,9 +25,16 @@ api.interceptors.response.use(
   }
 );
 
-export const getExperiences = () => api.get('/experiences');
+export const getExperiences = (params?: any) => api.get('/experiences', { params });
 export const getExperience = (id: string) => api.get(`/experiences/${id}`);
 export const validatePromo = (code: string) => api.post('/promo/validate', { code });
 export const createBooking = (payload: any) => api.post('/bookings', payload);
 export const createCheckoutSession = (payload: any) => api.post('/payments/create-checkout-session', payload);
+export const createPayPalOrder = (payload: any) => api.post('/payments/create-paypal-order', payload);
+export const capturePayPalOrder = (payload: any) => api.post('/payments/capture-paypal-order', payload);
 export const getBookings = (email?: string) => api.get('/bookings', { params: email ? { email } : {} });
+
+// Saved searches
+export const getSavedSearches = () => api.get('/saved-searches');
+export const saveSearch = (name: string, filters: any) => api.post('/saved-searches', { name, filters });
+export const deleteSavedSearch = (id: string) => api.delete(`/saved-searches/${id}`);

@@ -9,7 +9,6 @@ export default class ErrorBoundary extends React.Component {
     return { hasError: true };
   }
   componentDidCatch(error, info) {
-    // eslint-disable-next-line no-console
     console.error('UI Error:', error, info);
   }
   render() {

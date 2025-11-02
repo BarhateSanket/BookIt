@@ -59,6 +59,7 @@ export default function Register() {
           value={password}
           onChange={e => setPassword(e.target.value)}
           className="input"
+          autoComplete="new-password"
           required
         />
         {error && <div className="text-red-500 text-sm">{error}</div>}
