@@ -1,6 +1,7 @@
 # BookIt — Experiences & Slots
 
-https://github.com/BarhateSanket/BookIt/frontend/src/assets/images/Screenshot (42).png
+![BookIt Screenshot](https://raw.githubusercontent.com/BarhateSanket/BookIt/main/frontend/src/assets/images/Screenshot%20(42).png)
+
 
 [![Frontend](https://img.shields.io/badge/Frontend-React%2BTS-blue)](https://github.com/BarhateSanket/BookIt) [![Backend](https://img.shields.io/badge/Backend-Node.js%2BExpress-brightgreen)](https://github.com/BarhateSanket/BookIt) [![Database](https://img.shields.io/badge/Database-MongoDB-green)]()
 
