@@ -11,6 +11,11 @@ Built with modern web technologies for a responsive, scalable, and user-friendly
 
 ---
 
+![BookIt Screenshot](https://raw.githubusercontent.com/BarhateSanket/BookIt/main/frontend/src/assets/images/Screenshot%20(42).png)
+![BookIt Screenshot](https://raw.githubusercontent.com/BarhateSanket/BookIt/main/frontend/src/assets/images/Screenshot%20(45).png)
+![BookIt Screenshot](https://raw.githubusercontent.com/BarhateSanket/BookIt/main/frontend/src/assets/images/Screenshot%20(46).png)
+
+
 ## 🌟 Features
 
 - **Experience Discovery**: Browse a curated list of activities with images, descriptions, pricing, and ratings
