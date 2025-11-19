@@ -8,7 +8,6 @@
 A full-stack web application for booking curated travel experiences and activities. Users can browse experiences, check real-time slot availability, apply promo codes, and complete secure bookings with integrated PayPal payments.
 
 Built with modern web technologies for a responsive, scalable, and user-friendly experience.
-
 ## 📸 Screenshots
 
 ![BookIt Screenshot](https://raw.githubusercontent.com/BarhateSanket/BookIt/main/frontend/src/assets/images/Screenshot%20(42).png)
@@ -18,7 +17,6 @@ Built with modern web technologies for a responsive, scalable, and user-friendly
 ---
 
 ## 🌟 Features
-
 - **Experience Discovery**: Browse a curated list of activities with images, descriptions, pricing, and ratings
 - **Real-Time Availability**: View detailed experience information including date/time slots with live availability status
 - **Smart Booking System**: Prevent double-bookings and handle "sold out" scenarios automatically
