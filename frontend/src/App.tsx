@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import { DarkModeProvider, DarkModeToggle } from './hooks/useDarkMode';
+import { SkipLink, KeyboardShortcuts } from './components/Accessibility';
+import { trackEvent } from './utils/analytics';
+import { secureStorage } from './api/api';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { socketService } from './utils/socketService';
+import ChatWidget from './components/ChatWidget';
 import Home from './pages/Home';
 import Details from './pages/Details';
 import Checkout from './pages/Checkout';
@@ -7,6 +14,13 @@ import Payment from './pages/Payment';
 import Result from './pages/Result';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import Bookings from './pages/Bookings';
+import Categories from './pages/Categories';
+import Contact from './pages/Contact';
+import HelpCenter from './pages/HelpCenter';
+import HowItWorks from './pages/HowItWorks';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Sitemap from './pages/Sitemap';
@@ -18,8 +32,16 @@ function Navbar() {
 
   useEffect(() => {
     const updateUser = () => {
-      const u = localStorage.getItem('user');
-      setUser(u ? JSON.parse(u) : null);
+      const u = secureStorage.getItem('user');
+      const userData = u ? JSON.parse(u) : null;
+      setUser(userData);
+
+      // Connect/disconnect socket based on authentication
+      if (userData?.id) {
+        socketService.connect(userData.id);
+      } else {
+        socketService.disconnect();
+      }
     };
     updateUser();
     window.addEventListener('userChanged', updateUser);
@@ -27,8 +49,9 @@ function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    secureStorage.removeItem('token');
+    secureStorage.removeItem('user');
+    socketService.disconnect();
     window.dispatchEvent(new Event('userChanged'));
     setUser(null);
     nav('/');
@@ -39,8 +62,12 @@ function Navbar() {
       <Link to="/" className="text-2xl font-bold">BookIt</Link>
       <div className="flex items-center gap-4">
         <Link to="/" className="btn btn-secondary">Experiences</Link>
+        <Link to="/categories" className="btn btn-secondary">Categories</Link>
+        <Link to="/help" className="btn btn-secondary">Help</Link>
+        <DarkModeToggle />
         {user ? (
           <>
+            <Link to="/dashboard" className="btn btn-secondary">Dashboard</Link>
             <span className="font-medium">Hello, {user.name}</span>
             <button className="btn" onClick={handleLogout}>Logout</button>
           </>
@@ -110,30 +137,82 @@ function Footer() {
   );
 }
 
+function PageTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackEvent('page_view', {
+      page_path: location.pathname,
+      page_title: document.title
+    });
+  }, [location]);
+
+  return null;
+}
+
+function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const u = localStorage.getItem('user');
+    const userData = u ? JSON.parse(u) : null;
+    setUser(userData);
+    setLoading(false);
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (adminOnly && user.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen flex flex-col">
-        <div className="flex-grow">
-          <div className="container py-6">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/details/:id" element={<Details />} />
-              <Route path="/checkout/:id" element={<Checkout />} />
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/result" element={<Result />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/sitemap" element={<Sitemap />} />
-              <Route path="/about" element={<About />} />
-            </Routes>
+    <DarkModeProvider>
+      <BrowserRouter>
+        <ErrorBoundary>
+          <PageTracker />
+          <SkipLink href="#main-content">Skip to main content</SkipLink>
+          <KeyboardShortcuts />
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-grow">
+              <div className="container py-6" id="main-content">
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/details/:id" element={<Details />} />
+                  <Route path="/checkout/:id" element={<Checkout />} />
+                  <Route path="/payment" element={<Payment />} />
+                  <Route path="/result" element={<Result />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/admin" element={<ProtectedRoute adminOnly={true}><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
+                  <Route path="/categories" element={<Categories />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/help" element={<HelpCenter />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/sitemap" element={<Sitemap />} />
+                  <Route path="/about" element={<About />} />
+                </Routes>
+              </div>
+            </div>
+            <Footer />
+            <ChatWidget />
           </div>
-        </div>
-        <Footer />
-      </div>
-    </BrowserRouter>
+        </ErrorBoundary>
+      </BrowserRouter>
+    </DarkModeProvider>
   );
 }

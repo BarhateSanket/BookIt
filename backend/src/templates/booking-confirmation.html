@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #4F46E5; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background-color: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; }
+        .booking-details { background-color: white; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #4F46E5; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+        .button { display: inline-block; background-color: #4F46E5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎉 Booking Confirmed!</h1>
+        <p>Your experience awaits</p>
+    </div>
+
+    <div class="content">
+        <p>Dear {{userName}},</p>
+
+        <p>Thank you for booking with BookIt! Your booking has been confirmed and we're excited to have you join us.</p>
+
+        <div class="booking-details">
+            <h3>Booking Details</h3>
+            <p><strong>Experience:</strong> {{experienceTitle}}</p>
+            <p><strong>Date:</strong> {{slotDate}}</p>
+            <p><strong>Time:</strong> {{slotTime}}</p>
+            <p><strong>Quantity:</strong> {{quantity}} {{quantityLabel}}</p>
+            <p><strong>Total Price:</strong> ${{totalPrice}}</p>
+            <p><strong>Booking ID:</strong> {{bookingId}}</p>
+        </div>
+
+        <p><strong>Important Reminders:</strong></p>
+        <ul>
+            <li>Please arrive 15 minutes before your scheduled time</li>
+            <li>Bring a valid ID for verification</li>
+            <li>Check the weather forecast if it's an outdoor activity</li>
+        </ul>
+
+        <p>If you need to make changes to your booking or have any questions, please contact us at support@bookit.com.</p>
+
+        <p>We look forward to seeing you!</p>
+
+        <p>Best regards,<br>The BookIt Team</p>
+
+        <div class="footer">
+            <p>This is an automated email. Please do not reply to this message.</p>
+            <p>© 2024 BookIt. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

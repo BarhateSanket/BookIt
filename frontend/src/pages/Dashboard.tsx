@@ -1,5 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getProfile, getBookings } from '../api/api';
+import { DashboardSkeleton } from '../components/LoadingStates';
+import { ErrorDisplay } from '../components/ErrorDisplay';
+import { ApiError } from '../utils/apiErrorHandler';
+import { socketService } from '../utils/socketService';
 
 type Booking = {
   _id: string;
@@ -35,36 +40,49 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'bookings' | 'profile'>('overview');
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+
+    // Listen for real-time booking updates
+    const handleBookingCreated = (data: any) => {
+      // Refresh bookings if it's for this user
+      if (data.userId === user?.id) {
+        loadDashboardData();
+      }
+    };
+
+    const handleBookingCancelled = (data: any) => {
+      // Refresh bookings if it's for this user
+      if (data.userId === user?.id) {
+        loadDashboardData();
+      }
+    };
+
+    socketService.onBookingCreated(handleBookingCreated);
+    socketService.onBookingCancelled(handleBookingCancelled);
+
+    return () => {
+      socketService.off('booking-created');
+      socketService.off('booking-cancelled');
+    };
+  }, [user?.id]);
 
   const loadDashboardData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
+      setError(null);
       // Load user profile
-      const profileRes = await fetch('http://localhost:5000/api/auth/profile', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const profileData = await profileRes.json();
-      if (profileData.success) {
-        setUser(profileData.user);
-      }
+      const profileRes = await getProfile();
+      setUser(profileRes.data);
 
       // Load bookings
-      const bookingsRes = await fetch('http://localhost:5000/api/bookings', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const bookingsData = await bookingsRes.json();
-      if (bookingsData.success) {
-        setBookings(bookingsData.bookings);
-      }
+      const bookingsRes = await getBookings();
+      setBookings(bookingsRes.data || []);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      setError(error as ApiError);
     } finally {
       setLoading(false);
     }
@@ -78,17 +96,16 @@ export default function Dashboard() {
     new Date(b.slotDate) < new Date() || b.status !== 'confirmed'
   );
 
-  if (loading) {
+  if (loading) return <DashboardSkeleton />;
+
+  if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="animate-pulse space-y-6">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="h-32 bg-gray-200 rounded"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
-            <div className="h-32 bg-gray-200 rounded"></div>
-          </div>
-        </div>
+        <ErrorDisplay
+          error={error}
+          onRetry={loadDashboardData}
+          variant="inline"
+        />
       </div>
     );
   }

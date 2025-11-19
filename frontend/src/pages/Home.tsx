@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getExperiences } from '../api/api';
-import ExperienceCard from '../components/ExperienceCard';
+import { ExperienceCard } from '../components/ExperienceCard';
 import FilterPanel from '../components/FilterPanel';
-
+import MapView from '../components/MapView';
+import { ExperienceVirtualGrid } from '../components/VirtualScroll';
+import { ExperienceGridSkeleton } from '../components/LoadingStates';
+import { useDebounce } from '../utils/performanceOptimization';
+import { trackEvent } from '../utils/analytics';
 import SearchSuggestions from '../components/SearchSuggestions';
 
 type Exp = {
@@ -35,6 +39,7 @@ export default function Home() {
   const [exps, setExps] = useState<Exp[]>([]);
   const [filteredExps, setFilteredExps] = useState<Exp[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMap, setShowMap] = useState(false);
 
 
   const [filters, setFilters] = useState<Filters>({
@@ -47,6 +52,9 @@ export default function Home() {
     location: '',
     availability: false,
   });
+
+  // Debounce search input for better performance
+  const debouncedSearch = useDebounce(filters.search, 300);
 
   useEffect(() => {
     getExperiences().then(res => {
@@ -63,7 +71,7 @@ export default function Home() {
       try {
         const params: any = {};
 
-        if (filters.search) params.search = filters.search;
+        if (debouncedSearch) params.search = debouncedSearch;
         if (filters.category) params.category = filters.category;
         if (filters.priceMin > 0) params.priceMin = filters.priceMin;
         if (filters.priceMax > 0) params.priceMax = filters.priceMax;
@@ -75,6 +83,16 @@ export default function Home() {
 
         const res = await getExperiences(params);
         setFilteredExps(res.data || []);
+
+        // Track search/filter usage
+        if (debouncedSearch || filters.category || filters.location) {
+          trackEvent('search_performed', {
+            search_term: debouncedSearch || '',
+            category: filters.category || '',
+            location: filters.location || '',
+            result_count: res.data?.length || 0
+          });
+        }
       } catch (err) {
         console.error('Failed to apply filters:', err);
         setFilteredExps(exps); // Fallback to all experiences
@@ -84,7 +102,7 @@ export default function Home() {
     if (exps.length > 0) {
       applyFilters();
     }
-  }, [filters, exps]);
+  }, [debouncedSearch, filters.category, filters.priceMin, filters.priceMax, filters.rating, filters.duration, filters.location, filters.availability, exps]);
 
   const handleFiltersChange = (newFilters: Filters) => {
     setFilters(newFilters);
@@ -96,7 +114,7 @@ export default function Home() {
     setFilters({ ...filters, search: suggestion });
   };
 
-  if (loading) return <div className="text-center py-8">Loading...</div>;
+  if (loading) return <ExperienceGridSkeleton count={6} />;
 
   return (
     <div>
@@ -111,8 +129,8 @@ export default function Home() {
           <FilterPanel
             filters={filters}
             onFiltersChange={handleFiltersChange}
-            onToggleMap={() => {}}
-            showMap={false}
+            onToggleMap={() => setShowMap(!showMap)}
+            showMap={showMap}
           />
         </div>
 
@@ -148,25 +166,54 @@ export default function Home() {
             />
           </div>
 
-
-
-          {/* Experiences Grid */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {filteredExps.length === 0 ? (
-              <div className="col-span-full text-center text-gray-500">No experiences found.</div>
+          {showMap ? (
+            /* Map View */
+            <div className="h-96 lg:h-[600px] rounded-lg overflow-hidden border">
+              <MapView experiences={filteredExps} />
+            </div>
+          ) : (
+            /* Experiences Grid */
+            filteredExps.length === 0 ? (
+              <div className="text-center text-gray-500 py-12">No experiences found.</div>
+            ) : filteredExps.length > 20 ? (
+              /* Use Virtual Scroll for large lists */
+              <ExperienceVirtualGrid
+                experiences={filteredExps.map(e => ({
+                  id: e._id,
+                  title: e.title,
+                  description: e.description,
+                  price: e.price,
+                  image: e.images?.[0] || '',
+                  category: e.category || '',
+                  rating: e.rating,
+                  duration: e.duration
+                }))}
+                onBook={(id) => window.location.href = `/details/${id}`}
+                onExperienceClick={(id) => window.location.href = `/details/${id}`}
+                columns={3}
+              />
             ) : (
-              filteredExps.map(e => (
-                <ExperienceCard
-                  key={e._id}
-                  id={e._id}
-                  title={e.title}
-                  description={e.description}
-                  price={e.price}
-                  image={e.images?.[0]}
-                />
-              ))
-            )}
-          </div>
+              /* Regular grid for smaller lists */
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredExps.map(e => (
+                  <ExperienceCard
+                    key={e._id}
+                    experience={{
+                      id: e._id,
+                      title: e.title,
+                      description: e.description,
+                      price: e.price,
+                      image: e.images?.[0] || '',
+                      category: e.category || '',
+                      duration: e.duration,
+                      rating: e.rating
+                    }}
+                    onBook={(id) => window.location.href = `/details/${id}`}
+                  />
+                ))}
+              </div>
+            )
+          )}
         </div>
       </div>
 

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import { validatePromo, createBooking, createCheckoutSession } from '../api/api';
+import { validatePromo } from '../api/api';
 import { trackEvent } from '../utils/analytics';
+import GroupBookingModal from '../components/GroupBookingModal';
 
 export default function Checkout() {
   const { id } = useParams();
@@ -13,11 +14,13 @@ export default function Checkout() {
   const [quantity, setQuantity] = useState(1);
   const [promo, setPromo] = useState('');
   const [appliedPromo, setAppliedPromo] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const loading = false;
   const [error, setError] = useState('');
-  const [date, setDate] = useState<string>(() => new Date().toISOString().slice(0,10));
-  const [time, setTime] = useState<string>('10:00');
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const date = new Date().toISOString().slice(0,10);
+  const time = '10:00';
+  const [phone, setPhone] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
+  const [showGroupBooking, setShowGroupBooking] = useState(false);
 
   useEffect(() => {
     const hasUser = !!localStorage.getItem('user');
@@ -59,8 +62,11 @@ export default function Checkout() {
         quantity,
         name,
         email,
+        phone,
+        paymentMethod,
         slotDate: chosenSlot.date,
         slotTime: chosenSlot.time,
+        appliedPromo,
       }
     });
   };
@@ -125,6 +131,85 @@ export default function Checkout() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                       placeholder="Enter your email"
                     />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+
+                {/* Payment Method Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                    Payment Method
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <label className={`border rounded-lg p-4 cursor-pointer transition-colors ${paymentMethod === 'stripe' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900' : 'border-gray-300 dark:border-gray-600'}`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="stripe"
+                        checked={paymentMethod === 'stripe'}
+                        onChange={(e) => setPaymentMethod(e.target.value as 'stripe')}
+                        className="sr-only"
+                      />
+                      <div className="flex items-center">
+                        <div className="w-4 h-4 border-2 border-gray-300 rounded-full mr-3 flex items-center justify-center">
+                          {paymentMethod === 'stripe' && <div className="w-2 h-2 bg-primary-500 rounded-full"></div>}
+                        </div>
+                        <div>
+                          <div className="font-medium">Credit/Debit Card</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-300">Powered by Stripe</div>
+                        </div>
+                      </div>
+                    </label>
+
+                    <label className={`border rounded-lg p-4 cursor-pointer transition-colors ${paymentMethod === 'paypal' ? 'border-primary-500 bg-primary-50 dark:bg-primary-900' : 'border-gray-300 dark:border-gray-600'}`}>
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="paypal"
+                        checked={paymentMethod === 'paypal'}
+                        onChange={(e) => setPaymentMethod(e.target.value as 'paypal')}
+                        className="sr-only"
+                      />
+                      <div className="flex items-center">
+                        <div className="w-4 h-4 border-2 border-gray-300 rounded-full mr-3 flex items-center justify-center">
+                          {paymentMethod === 'paypal' && <div className="w-2 h-2 bg-primary-500 rounded-full"></div>}
+                        </div>
+                        <div>
+                          <div className="font-medium">PayPal</div>
+                          <div className="text-sm text-gray-600 dark:text-gray-300">Pay with PayPal</div>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Group Booking Option */}
+                <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-blue-900 dark:text-blue-100">Group Booking</h3>
+                      <p className="text-sm text-blue-700 dark:text-blue-200">Book for multiple people and get discounts</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowGroupBooking(true)}
+                      className="btn-secondary"
+                    >
+                      Create Group Booking
+                    </button>
                   </div>
                 </div>
 
@@ -221,6 +306,20 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+
+      {/* Group Booking Modal */}
+      <GroupBookingModal
+        isOpen={showGroupBooking}
+        onClose={() => setShowGroupBooking(false)}
+        experienceId={effectiveId || ''}
+        slotDate={chosenSlot?.date || ''}
+        slotTime={chosenSlot?.time || ''}
+        basePrice={price || 0}
+        onBookingSuccess={(booking) => {
+          // Handle group booking success
+          nav('/result', { state: { success: true, booking } });
+        }}
+      />
     </div>
   );
 }

@@ -1,0 +1,125 @@
+groups:
+  - name: bookit_alerts
+    rules:
+    # Backend alerts
+    - alert: BackendHighResponseTime
+      expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="bookit-backend"}[5m])) > 2
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High response time on backend"
+        description: "95th percentile response time is {{ $value }}s"
+
+    - alert: BackendHighErrorRate
+      expr: rate(http_requests_total{job="bookit-backend", status=~"5.."}[5m]) / rate(http_requests_total{job="bookit-backend"}[5m]) > 0.05
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High error rate on backend"
+        description: "Error rate is {{ $value | printf \"%.2f\" }}%"
+
+    - alert: BackendDown
+      expr: up{job="bookit-backend"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Backend service is down"
+        description: "Backend has been down for more than 2 minutes"
+
+    # Frontend alerts
+    - alert: FrontendDown
+      expr: up{job="bookit-frontend"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Frontend service is down"
+        description: "Frontend has been down for more than 2 minutes"
+
+    # Database alerts
+    - alert: MongoDBDown
+      expr: up{job="mongodb"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "MongoDB is down"
+        description: "MongoDB has been down for more than 2 minutes"
+
+    - alert: MongoDBHighConnections
+      expr: mongodb_connections_current > 1000
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High MongoDB connections"
+        description: "MongoDB has {{ $value }} active connections"
+
+    # Redis alerts
+    - alert: RedisDown
+      expr: up{job="redis"} == 0
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Redis is down"
+        description: "Redis has been down for more than 2 minutes"
+
+    - alert: RedisHighMemoryUsage
+      expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.8
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High Redis memory usage"
+        description: "Redis memory usage is {{ $value | printf \"%.1f\" }}%"
+
+    # System alerts
+    - alert: HighCPUUsage
+      expr: rate(cpu_usage_total[5m]) > 0.8
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage"
+        description: "CPU usage is {{ $value | printf \"%.1f\" }}%"
+
+    - alert: HighMemoryUsage
+      expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 0.85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High memory usage"
+        description: "Memory usage is {{ $value | printf \"%.1f\" }}%"
+
+    - alert: DiskSpaceLow
+      expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Low disk space"
+        description: "Disk space is below 10%"
+
+    # Application-specific alerts
+    - alert: HighFraudScore
+      expr: increase(bookit_fraud_detection_total[1h]) > 10
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High fraud detection activity"
+        description: "Detected {{ $value }} potential fraud attempts in the last hour"
+
+    - alert: SlowQueries
+      expr: increase(bookit_slow_queries_total[5m]) > 5
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Slow database queries detected"
+        description: "{{ $value }} slow queries detected in the last 5 minutes"

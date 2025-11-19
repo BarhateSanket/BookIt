@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { createCheckoutSession, createPayPalOrder, capturePayPalOrder } from '../api/api';
@@ -14,8 +14,11 @@ export default function Payment() {
     quantity,
     name,
     email,
+    phone,
+    paymentMethod,
     slotDate,
     slotTime,
+    appliedPromo,
   }: any = location.state || {};
 
   const [loading, setLoading] = useState(false);
@@ -57,6 +60,12 @@ export default function Payment() {
   };
 
   const subtotal = (price || 0) * (quantity || 1);
+  let discount = 0;
+  if (appliedPromo) {
+    if (appliedPromo.type === 'percentage') discount = (subtotal * appliedPromo.value) / 100;
+    else discount = appliedPromo.value;
+  }
+  const total = Math.max(0, subtotal - discount);
 
   return (
     <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '', currency: 'INR' }}>
@@ -86,14 +95,30 @@ export default function Payment() {
               <span className="text-gray-600 dark:text-gray-300">Email</span>
               <span className="font-medium text-gray-900 dark:text-white">{email}</span>
             </div>
+            {phone && (
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 dark:text-gray-300">Phone</span>
+                <span className="font-medium text-gray-900 dark:text-white">{phone}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center">
               <span className="text-gray-600 dark:text-gray-300">Quantity</span>
               <span className="font-medium text-gray-900 dark:text-white">{quantity}</span>
             </div>
             <div className="border-t border-gray-300 dark:border-gray-600 pt-3 mt-4">
-              <div className="flex justify-between items-center text-lg font-bold">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 dark:text-gray-300">Subtotal</span>
+                <span className="text-gray-900 dark:text-white">₹{Math.round(subtotal)}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between items-center text-green-600">
+                  <span>Discount ({appliedPromo.code})</span>
+                  <span>-₹{Math.round(discount)}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center text-lg font-bold pt-2 border-t border-gray-300 dark:border-gray-600">
                 <span className="text-gray-900 dark:text-white">Total Amount</span>
-                <span className="text-green-600 dark:text-green-400">₹{Math.round(subtotal)}</span>
+                <span className="text-green-600 dark:text-green-400">₹{Math.round(total)}</span>
               </div>
             </div>
           </div>
@@ -112,7 +137,8 @@ export default function Payment() {
 
         <div className="space-y-6">
           {/* Stripe Payment Option */}
-          <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-6">
+          {(!paymentMethod || paymentMethod === 'stripe') && (
+            <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-6">
             <div className="flex items-center mb-4">
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center mr-3">
                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -148,9 +174,11 @@ export default function Payment() {
               </button>
             </div>
           </div>
+          )}
 
           {/* PayPal Payment Option */}
-          <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-6">
+          {(!paymentMethod || paymentMethod === 'paypal') && (
+            <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-6">
             <div className="flex items-center mb-4">
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -176,7 +204,7 @@ export default function Payment() {
                 });
                 return res.data.id;
               }}
-              onApprove={async (data) => {
+              onApprove={async (data: any) => {
                 const metadata = { experienceId, slotDate, slotTime, userName: name, userEmail: email, quantity };
                 const res = await capturePayPalOrder({ orderID: data.orderID, metadata });
                 if (res.data.success) {
@@ -185,12 +213,13 @@ export default function Payment() {
                   setError('Payment failed');
                 }
               }}
-              onError={(err) => {
+              onError={(err: any) => {
                 console.error(err);
                 setError('PayPal payment failed');
               }}
             />
           </div>
+          )}
         </div>
 
         <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">

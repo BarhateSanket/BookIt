@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 const Experience = require('../models/Experience');
+const { sendBookingConfirmation } = require('../utils/emailService');
 
 // Lazy require to allow startup without stripe in dev until installed
 let stripe;
@@ -148,6 +149,40 @@ router.post('/capture-paypal-order', async (req, res) => {
 				const booking = await Booking.create([{ experience: experienceId, slotDate, slotTime, userName, userEmail, quantity, totalPrice }], { session: sessionDb });
 				await sessionDb.commitTransaction();
 				sessionDb.endSession();
+
+				// Send confirmation email
+				try {
+					const bookingData = {
+						userName: userName,
+						userEmail: userEmail,
+						experienceTitle: experience.title,
+						slotDate: slotDate,
+						slotTime: slotTime,
+						quantity: quantity,
+						quantityLabel: quantity > 1 ? 'people' : 'person',
+						totalPrice: totalPrice.toFixed(2),
+						bookingId: booking[0]._id.toString(),
+						experienceLocation: experience.location || 'Location TBA'
+					};
+					await sendBookingConfirmation(bookingData);
+				} catch (emailError) {
+					console.error('Failed to send confirmation email:', emailError);
+					// Don't fail the booking if email fails
+				}
+
+				// Emit real-time updates
+				const io = req.app.get('io');
+				if (io) {
+					// Notify the user about their new booking (we don't have user ID here, so we'll skip user-specific notification)
+					// Notify all users viewing this experience about availability change
+					io.to(`experience_${experienceId}`).emit('availability-updated', {
+						experienceId,
+						slotDate,
+						slotTime,
+						bookedCount: slot.bookedCount + quantity
+					});
+				}
+
 				return res.json({ success: true, booking: booking[0] });
 			} catch (e) {
 				await sessionDb.abortTransaction();

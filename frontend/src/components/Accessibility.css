@@ -1,0 +1,23 @@
+.hover-scale {
+  transition: transform var(--duration, 200ms);
+}
+
+.hover-scale:hover {
+  transform: scale(var(--scale, 1.05));
+}
+
+.fade-in {
+  transition: opacity var(--duration), transform var(--duration);
+  transition-delay: var(--delay);
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ripple-span {
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+  width: var(--width);
+  height: var(--height);
+  margin-left: var(--margin-left);
+  margin-top: var(--margin-top);
+}

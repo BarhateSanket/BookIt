@@ -68,6 +68,16 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFiltersChange, onT
     <div className="bg-white p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">Filters</h3>
+        <button
+          onClick={onToggleMap}
+          className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+            showMap
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          {showMap ? '📋 List' : '🗺️ Map'}
+        </button>
       </div>
 
       <div className="space-y-4">
